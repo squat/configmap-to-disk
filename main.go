@@ -58,6 +58,8 @@ func main() {
 	cmd.PersistentFlags().StringVar(&listen, "listen", ":8080", "The address at which to listen for health and metrics.")
 	var logLevel string
 	cmd.PersistentFlags().StringVar(&logLevel, "log-level", logLevelInfo, fmt.Sprintf("Log level to use. Possible values: %s", availableLogLevels))
+	var syncOneTime bool
+	cmd.PersistentFlags().BoolVar(&syncOneTime, "one-time", false, "Syncs the configmap to disk a single time and exits.")
 
 	var c kubernetes.Interface
 	var logger log.Logger
@@ -90,7 +92,12 @@ func main() {
 
 		return nil
 	}
-	cmd.RunE = runCmd(&c, &listen, &namespace, &path, &name, &key, &logger)
+
+	// Determine whether to run once or run continuously
+	if !syncOneTime {
+		cmd.RunE = runCmd(&c, &listen, &namespace, &path, &name, &key, &logger)
+	}
+	cmd.RunE = runOneTime(&c, &listen, &namespace, &path, &name, &key, &logger)
 
 	if err := cmd.Execute(); err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
@@ -144,5 +151,18 @@ func runCmd(c *kubernetes.Interface, listen, namespace, path, name, key *string,
 		}
 
 		return g.Run()
+	}
+}
+
+func runOneTime(c *kubernetes.Interface, listen, namespace, path, name, key *string, logger *log.Logger) func(*cobra.Command, []string) error {
+	return func(_ *cobra.Command, args []string) error {
+		// get configmap
+		// handle configmap doesn't exist. error.
+		// safe to file.
+
+		level.Info(*logger).Log("msg", "Runing configmap-to-disk in one time mode.")
+
+		return nil
+
 	}
 }
