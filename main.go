@@ -97,7 +97,7 @@ func main() {
 	if !syncOneTime {
 		cmd.RunE = runCmd(&c, &listen, &namespace, &path, &name, &key, &logger)
 	}
-	cmd.RunE = runOneTime(&c, &listen, &namespace, &path, &name, &key, &logger)
+	cmd.RunE = runCmdOneTime(&c, &namespace, &path, &name, &key, &logger)
 
 	if err := cmd.Execute(); err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
@@ -154,15 +154,9 @@ func runCmd(c *kubernetes.Interface, listen, namespace, path, name, key *string,
 	}
 }
 
-func runOneTime(c *kubernetes.Interface, listen, namespace, path, name, key *string, logger *log.Logger) func(*cobra.Command, []string) error {
+func runCmdOneTime(c *kubernetes.Interface, namespace, path, name, key *string, logger *log.Logger) func(*cobra.Command, []string) error {
 	return func(_ *cobra.Command, args []string) error {
-		// get configmap
-		// handle configmap doesn't exist. error.
-		// safe to file.
-
 		level.Info(*logger).Log("msg", "Runing configmap-to-disk in one time mode.")
-
-		return nil
-
+		return runOneTime(*c, *namespace, *path, *name, *key, *logger)
 	}
 }
