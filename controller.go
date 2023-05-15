@@ -57,6 +57,7 @@ func newController(client kubernetes.Interface, namespace, path, name, key strin
 }
 
 func (c *controller) run(stop <-chan struct{}) error {
+
 	go c.informer.Run(stop)
 	if ok := cache.WaitForCacheSync(stop, func() bool {
 		return c.informer.HasSynced()
@@ -103,4 +104,28 @@ func (c *controller) handle(obj interface{}) {
 		level.Error(c.logger).Log("err", fmt.Sprintf("failed to write file: %v", err))
 	}
 	return
+}
+
+func runOneTime(client kubernetes.Interface, namespace, path, name, key string, logger log.Logger) error {
+	// get configmap
+	cm, err := client.CoreV1().ConfigMaps(namespace).Get(name, metav1.GetOptions{})
+
+	// Raise err if configmap doesn't exist
+	if err != nil {
+		level.Error(logger).Log("err", fmt.Sprintf("Failed to retrieve configmap: %v", err))
+		return err
+	}
+
+	// safe to file.
+	data, ok := cm.Data[key]
+	if !ok {
+		level.Error(logger).Log("err", fmt.Sprintf("Configmap does not have key: %v", key))
+		return fmt.Errorf("Configmap does not include specified key: %v", key)
+	}
+
+	if err := ioutil.WriteFile(path, []byte(data), 0644); err != nil {
+		level.Error(logger).Log("err", fmt.Sprintf("failed to write file: %v", err))
+	}
+
+	return nil
 }
