@@ -57,7 +57,7 @@ func newController(client kubernetes.Interface, namespace, path, name, key strin
 }
 
 func (c *controller) run(stop <-chan struct{}) error {
-	c.client.CoreV1().ConfigMaps("namespace").Get("name", metav1.GetOptions{})
+
 	go c.informer.Run(stop)
 	if ok := cache.WaitForCacheSync(stop, func() bool {
 		return c.informer.HasSynced()

@@ -104,14 +104,17 @@ func main() {
 			return fmt.Errorf("Required argument not present: --name")
 		}
 
+		// Determine whether to run once or run continuously. Default is continuous.
+		// Flags are only loaded in this context.
+		if syncOneTime {
+			cmd.RunE = runCmdOneTime(&c, &namespace, &path, &name, &key, &logger)
+		}
+
 		return nil
 	}
 
-	// Determine whether to run once or run continuously
-	if !syncOneTime {
-		cmd.RunE = runCmd(&c, &listen, &namespace, &path, &name, &key, &logger)
-	}
-	cmd.RunE = runCmdOneTime(&c, &namespace, &path, &name, &key, &logger)
+	// Default mode is continuous. This gets overwritten in PersistentPreRunE if the syncOneTime flag is enabled
+	cmd.RunE = runCmd(&c, &listen, &namespace, &path, &name, &key, &logger)
 
 	if err := cmd.Execute(); err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
