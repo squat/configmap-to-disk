@@ -90,6 +90,20 @@ func main() {
 		}
 		c = kubernetes.NewForConfigOrDie(config)
 
+		// Validate arguments are present
+		if len(namespace) == 0 {
+			return fmt.Errorf("Required argument not present: --namespace")
+		}
+		if len(key) == 0 {
+			return fmt.Errorf("Required argument not present: --key")
+		}
+		if len(path) == 0 {
+			return fmt.Errorf("Required argument not present: --path")
+		}
+		if len(name) == 0 {
+			return fmt.Errorf("Required argument not present: --name")
+		}
+
 		return nil
 	}
 
