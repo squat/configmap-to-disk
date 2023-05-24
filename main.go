@@ -92,16 +92,16 @@ func main() {
 
 		// Validate arguments are present
 		if len(namespace) == 0 {
-			return fmt.Errorf("Required argument not present: --namespace")
+			return fmt.Errorf("required argument not present: --namespace")
 		}
 		if len(key) == 0 {
-			return fmt.Errorf("Required argument not present: --key")
+			return fmt.Errorf("required argument not present: --key")
 		}
 		if len(path) == 0 {
-			return fmt.Errorf("Required argument not present: --path")
+			return fmt.Errorf("required argument not present: --path")
 		}
 		if len(name) == 0 {
-			return fmt.Errorf("Required argument not present: --name")
+			return fmt.Errorf("required argument not present: --name")
 		}
 
 		// Determine whether to run once or run continuously. Default is continuous.
