@@ -119,7 +119,7 @@ func runOneTime(client kubernetes.Interface, namespace, path, name, key string, 
 	data, ok := cm.Data[key]
 	if !ok {
 		level.Error(logger).Log("err", fmt.Sprintf("Configmap does not have key: %v", key))
-		return fmt.Errorf("Configmap does not include specified key: %v", key)
+		return fmt.Errorf("ConfigMap does not include specified key: %v", key)
 	}
 
 	if err := ioutil.WriteFile(path, []byte(data), 0644); err != nil {
