@@ -111,7 +111,7 @@ func runOneTime(client kubernetes.Interface, namespace, path, name, key string, 
 
 	// Raise err if configmap doesn't exist
 	if err != nil {
-		level.Error(logger).Log("err", fmt.Sprintf("Failed to retrieve configmap: %v", err))
+		level.Error(logger).Log("err", fmt.Sprintf("Failed to retrieve ConfigMap: %v", err))
 		return err
 	}
 
