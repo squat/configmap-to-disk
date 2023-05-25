@@ -82,6 +82,6 @@ Flags:
       --log-level string    Log level to use. Possible values: all, debug, info, warn, error, none (default "info")
       --name string         The ConfigMap name.
       --namespace string    The namespace to watch.
-      --one-time            Syncs the configmap to disk a single time and exits.
+      --one-time            Syncs the ConfigMap to disk a single time and exits.
       --path string         Where to write the file.
 ```
