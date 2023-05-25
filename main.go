@@ -59,7 +59,7 @@ func main() {
 	var logLevel string
 	cmd.PersistentFlags().StringVar(&logLevel, "log-level", logLevelInfo, fmt.Sprintf("Log level to use. Possible values: %s", availableLogLevels))
 	var syncOneTime bool
-	cmd.PersistentFlags().BoolVar(&syncOneTime, "one-time", false, "Syncs the configmap to disk a single time and exits.")
+	cmd.PersistentFlags().BoolVar(&syncOneTime, "one-time", false, "Syncs the ConfigMap to disk a single time and exits.")
 
 	var c kubernetes.Interface
 	var logger log.Logger
