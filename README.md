@@ -77,10 +77,11 @@ Usage:
 Flags:
   -h, --help                help for configmap-to-disk
       --key string          The ConfigMap key to read.
-      --kubeconfig string   Path to kubeconfig. (default "/home/squat/src/kubeconeu2020/kubeconfig")
+      --kubeconfig string   Path to kubeconfig. (default $KUBECONFIG)
       --listen string       The address at which to listen for health and metrics. (default ":8080")
       --log-level string    Log level to use. Possible values: all, debug, info, warn, error, none (default "info")
       --name string         The ConfigMap name.
       --namespace string    The namespace to watch.
+      --one-time            Syncs the ConfigMap to disk a single time and exits.
       --path string         Where to write the file.
 ```

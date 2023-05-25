@@ -58,6 +58,8 @@ func main() {
 	cmd.PersistentFlags().StringVar(&listen, "listen", ":8080", "The address at which to listen for health and metrics.")
 	var logLevel string
 	cmd.PersistentFlags().StringVar(&logLevel, "log-level", logLevelInfo, fmt.Sprintf("Log level to use. Possible values: %s", availableLogLevels))
+	var syncOneTime bool
+	cmd.PersistentFlags().BoolVar(&syncOneTime, "one-time", false, "Syncs the ConfigMap to disk a single time and exits.")
 
 	var c kubernetes.Interface
 	var logger log.Logger
@@ -88,8 +90,30 @@ func main() {
 		}
 		c = kubernetes.NewForConfigOrDie(config)
 
+		// Validate arguments are present
+		if len(namespace) == 0 {
+			return fmt.Errorf("required argument not present: --namespace")
+		}
+		if len(key) == 0 {
+			return fmt.Errorf("required argument not present: --key")
+		}
+		if len(path) == 0 {
+			return fmt.Errorf("required argument not present: --path")
+		}
+		if len(name) == 0 {
+			return fmt.Errorf("required argument not present: --name")
+		}
+
+		// Determine whether to run once or run continuously. Default is continuous.
+		// Flags are only loaded in this context.
+		if syncOneTime {
+			cmd.RunE = runCmdOneTime(&c, &namespace, &path, &name, &key, &logger)
+		}
+
 		return nil
 	}
+
+	// Default mode is continuous. This gets overwritten in PersistentPreRunE if the syncOneTime flag is enabled
 	cmd.RunE = runCmd(&c, &listen, &namespace, &path, &name, &key, &logger)
 
 	if err := cmd.Execute(); err != nil {
@@ -144,5 +168,12 @@ func runCmd(c *kubernetes.Interface, listen, namespace, path, name, key *string,
 		}
 
 		return g.Run()
+	}
+}
+
+func runCmdOneTime(c *kubernetes.Interface, namespace, path, name, key *string, logger *log.Logger) func(*cobra.Command, []string) error {
+	return func(_ *cobra.Command, args []string) error {
+		level.Info(*logger).Log("msg", "Runing configmap-to-disk in one time mode.")
+		return runOneTime(*c, *namespace, *path, *name, *key, *logger)
 	}
 }
